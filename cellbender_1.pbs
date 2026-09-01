@@ -1,0 +1,23 @@
+#!/bin/bash
+#PBS -S /bin/bash
+#PBS -m abe
+#PBS -N cellbender_gpu
+#PBS -M akriti.varshney@mcri.edu.au
+#PBS -o /group/tran3/avarsh/2025_fish/cellbender
+#PBS -e /group/tran3/avarsh/2025_fish/cellbender
+#PBS -l nodes=1:ppn=4:gpus=1
+#PBS -l mem=32GB
+#PBS -l walltime=72:00:00
+#PBS -A tran3
+#PBS -t 0-15%1
+#PBS -q gpu
+
+cd /group/tran3/avarsh/2025_fish/data/counts_GCF_043380555_1/
+
+IFS='\ ' read -r -a h5s <<< $(find $PROJDIR -maxdepth 1 -mindepth 1 -type d -exec realpath {} \;)
+
+H5FILES=(${h5s[@]})
+
+/group/tran3/avarsh/2025_fish/cellbender/cellbender_2.sh ${H5FILES[$PBS_ARRAYID]} $PBS_ARRAYID
+
+echo "End?"

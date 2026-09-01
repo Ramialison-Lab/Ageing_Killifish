@@ -1,0 +1,32 @@
+#!/bin/bash
+#PBS -S /bin/bash
+#PBS -N cellranger
+#PBS -o /group/tran3/avarsh/2025_fish/
+#PBS -e /group/tran3/avarsh/2025_fish/
+#PBS -l walltime=96:00:00
+#PBS -q batch
+#PBS -l mem=240GB
+#PBS -l nodes=1:ppn=32
+#PBS -m abe
+#PBS -M akriti.varshney@mcri.edu.au
+#PBS -A tran3
+
+cd /group/tran3/avarsh/2025_fish/data/counts_GCF_043380555_1/
+module load cellranger
+
+FILE_PATH="/group/tran3/avarsh/2025_fish/data/241106_VH00362_AvnikaRupareliaCombined/fastq"
+REFERENCE="/group/tran3/avarsh/2025_fish/ref/Nfu_GCF_043380555_1"
+# previously used the old reference Nfu_GCF_001465895_1
+# reran with the latest reference Nfu_GCF_043380555_1
+
+## running cellranger count on each sample
+while IFS=',' read -r sample_id sample fastq_path; do
+  [[ $sample_id == "sample_id" ]] && continue  # Skip header
+
+  echo "Running cellranger count for $sample_id..."
+  cellranger count --id=$sample_id \
+    --transcriptome=$REFERENCE \
+    --fastqs=$fastq_path \
+    --sample=$sample \
+    --create-bam=false
+done < /group/tran3/avarsh/2025_fish/data/counts/cellranger_count.csv
